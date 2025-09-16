@@ -1,0 +1,26 @@
+[
+  {
+    "id": "p001",
+    "title": "Auriculares inalámbricos X100",
+    "description": "Cancelación de ruido, 30h batería.",
+    "price": 12999.99,
+    "stock": 12,
+    "image": "https://picsum.photos/id/30/400/300"
+  },
+  {
+    "id": "p002",
+    "title": "Smartwatch Pro",
+    "description": "Monitoreo de ritmo cardíaco, GPS integrado.",
+    "price": 250000,
+    "stock": 8,
+    "image": "https://picsum.photos/id/100/400/300"
+  },
+  {
+    "id": "p003",
+    "title": "Cargador rápido 65W",
+    "description": "USB-C, compatible con laptops.",
+    "price": 80000,
+    "stock": 25,
+    "image": "https://picsum.photos/id/40/400/300"
+  }
+]
