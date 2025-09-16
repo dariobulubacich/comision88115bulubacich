@@ -16,7 +16,7 @@
   </head>
   <body>
     <header class="site-header">
-      <h1>Simulador Ecommerce</h1>
+      <h1>Electronica La Memoria</h1>
       <div class="cart-summary" id="cart-summary">
         <button id="view-cart-btn" class="btn">
           🛒 Carrito (<span id="cart-count">0</span>)
@@ -25,6 +25,19 @@
     </header>
 
     <main>
+      <div id="filters">
+        <input
+          type="text"
+          id="search-input"
+          placeholder="Buscar producto por nombre"
+          value=""
+        />
+        <select id="sort-select">
+          <option value="">Ordenar por precio</option>
+          <option value="asc">Menor a mayor</option>
+          <option value="desc">Mayor a menor</option>
+        </select>
+      </div>
       <section
         id="products-container"
         class="products-grid"
@@ -47,7 +60,7 @@
             <input id="customer-address" name="address" required />
           </label>
           <div class="checkout-actions">
-            <button type="submit" class="btn">Confirmar pago (simulado)</button>
+            <button type="submit" class="btn">Confirmar pago</button>
             <button type="button" id="cancel-checkout" class="btn secondary">
               Cancelar
             </button>

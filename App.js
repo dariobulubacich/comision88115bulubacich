@@ -6,6 +6,9 @@ const checkoutSection = document.getElementById("checkout-section");
 const checkoutForm = document.getElementById("checkout-form");
 const cancelCheckoutBtn = document.getElementById("cancel-checkout");
 
+const searchInput = document.getElementById("search-input");
+const sortSelect = document.getElementById("sort-select");
+
 let products = [];
 let cart = loadCartFromStorage();
 
@@ -32,19 +35,33 @@ async function fetchProducts() {
     const resp = await fetch(PRODUCTS_URL);
     if (!resp.ok) throw new Error("No se pudo cargar productos");
     products = await resp.json();
-    renderProducts();
+    renderFilteredProducts(products);
   } catch (error) {
     Swal.fire({
       icon: "error",
       title: "Error",
-      text: "Error al cargar productos. Usa Live Server o sube a GitHub Pages.",
+      text: "Error al cargar productos.",
     });
   }
 }
 
-function renderProducts() {
+function updateDisplay() {
+  let filtered = products.filter((p) =>
+    p.title.toLowerCase().includes(searchInput.value.toLowerCase())
+  );
+
+  if (sortSelect.value === "asc") {
+    filtered.sort((a, b) => a.price - b.price);
+  } else if (sortSelect.value === "desc") {
+    filtered.sort((a, b) => b.price - a.price);
+  }
+
+  renderFilteredProducts(filtered);
+}
+
+function renderFilteredProducts(filteredProducts) {
   productsContainer.innerHTML = "";
-  products.forEach((product) => {
+  filteredProducts.forEach((product) => {
     const card = document.createElement("article");
     card.className = "card";
     card.innerHTML = `
@@ -177,18 +194,14 @@ async function showCartModal() {
     },
   });
 
-  if (action) {
-    showCheckoutSection();
-  }
+  if (action) showCheckoutSection();
 }
 
 function decreaseItem(id) {
   const item = cart.find((i) => i.id === id);
   if (!item) return;
   item.qty = Math.max(0, item.qty - 1);
-  if (item.qty === 0) {
-    cart = cart.filter((i) => i.id !== id);
-  }
+  if (item.qty === 0) cart = cart.filter((i) => i.id !== id);
   saveCartToStorage();
   updateCartCount();
 }
@@ -204,9 +217,9 @@ function showCheckoutSection() {
   const nameInput = document.getElementById("customer-name");
   const emailInput = document.getElementById("customer-email");
   const addressInput = document.getElementById("customer-address");
-  nameInput.value = "Juan Pérez";
-  emailInput.value = "juan.perez@mail.com";
-  addressInput.value = "Calle Falsa 123";
+  nameInput.value = "";
+  emailInput.value = "";
+  addressInput.value = "";
   checkoutSection.scrollIntoView({ behavior: "smooth" });
 }
 
@@ -262,7 +275,7 @@ async function handleCheckoutSubmit(ev) {
   localStorage.setItem("pf_sales", JSON.stringify(sales));
 
   clearCart();
-  renderProducts();
+  renderFilteredProducts(products);
   checkoutSection.hidden = true;
 
   const { isConfirmed } = await Swal.fire({
@@ -277,9 +290,7 @@ async function handleCheckoutSubmit(ev) {
     denyButtonText: "Cerrar",
   });
 
-  if (isConfirmed) {
-    downloadJSON(receipt, `recibo_${receipt.transactionId}.json`);
-  }
+  if (isConfirmed) downloadJSON(receipt, `recibo_${receipt.transactionId}.pdf`);
 }
 
 function createReceipt(customer, cartItems) {
@@ -318,11 +329,14 @@ function downloadJSON(obj, filename = "data.json") {
   a.click();
   URL.revokeObjectURL(url);
 }
+
 viewCartBtn.addEventListener("click", showCartModal);
 checkoutForm.addEventListener("submit", handleCheckoutSubmit);
 cancelCheckoutBtn.addEventListener("click", () => {
   checkoutSection.hidden = true;
 });
+searchInput.addEventListener("input", updateDisplay);
+sortSelect.addEventListener("change", updateDisplay);
+
 updateCartCount();
 fetchProducts();
-export default App;
